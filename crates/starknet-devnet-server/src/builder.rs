@@ -101,7 +101,7 @@ impl<TJsonRpcHandler: RpcHandler, THttpApiHandler: Clone + Send + Sync + 'static
             .layer(Extension(self.http_api_handler))
             .layer(TraceLayer::new_for_http())
             .layer(TimeoutLayer::new(Duration::from_secs(starknet_config.timeout.into())))
-            .layer(DefaultBodyLimit::max(usize::MAX));
+            .layer(DefaultBodyLimit::disable());
 
         if let Some(ServerConfig { allow_origin }) = self.config {
             svc = svc.layer(
