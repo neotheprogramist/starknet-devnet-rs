@@ -2,6 +2,7 @@ use std::convert::Infallible;
 use std::net::SocketAddr;
 use std::time::Duration;
 
+use axum::extract::DefaultBodyLimit;
 use axum::response::Response;
 use axum::routing::{post, IntoMakeService};
 use axum::{Extension, Router};
@@ -99,7 +100,8 @@ impl<TJsonRpcHandler: RpcHandler, THttpApiHandler: Clone + Send + Sync + 'static
             .layer(Extension(self.json_rpc_handler))
             .layer(Extension(self.http_api_handler))
             .layer(TraceLayer::new_for_http())
-            .layer(TimeoutLayer::new(Duration::from_secs(starknet_config.timeout.into())));
+            .layer(TimeoutLayer::new(Duration::from_secs(starknet_config.timeout.into())))
+            .layer(DefaultBodyLimit::max(usize::MAX));
 
         if let Some(ServerConfig { allow_origin }) = self.config {
             svc = svc.layer(
