@@ -553,6 +553,7 @@ dependencies = [
 [[package]]
 name = "blockifier"
 version = "0.6.0-rc.1"
+source = "git+https://github.com/neotheprogramist/blockifier.git?branch=feat/1-serde#a0e72381a15b3040cc96d805114a9e419df91f23"
 dependencies = [
  "anyhow",
  "ark-ec",

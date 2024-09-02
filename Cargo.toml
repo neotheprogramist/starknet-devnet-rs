@@ -68,8 +68,7 @@ num-bigint = { version = "0.4" }
 
 # Starknet dependencies
 starknet_api = { version = "0.10.0", features = ["testing"] }
-# blockifier = { version = "0.6.0-rc.1" }
-blockifier = { path = "/home/filipg/dev/forks-latest/blockifier/crates/blockifier", features = [
+blockifier = { git = "https://github.com/neotheprogramist/blockifier.git", branch = "feat/1-serde", features = [
 	"testing",
 ] }
 starknet-rs-signers = { version = "0.8.0", package = "starknet-signers" }
