@@ -1,4 +1,4 @@
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use serde::{Deserialize, Serialize};
 use starknet_rs_core::types::CompressedLegacyContractClass;
 
 use crate::contract_class::deprecated::rpc_contract_class::DeprecatedContractClass;
@@ -11,33 +11,33 @@ pub mod abi_entry;
 pub mod json_contract_class;
 pub mod rpc_contract_class;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub enum Cairo0ContractClass {
     // TODO: remove once starknet_api raised
     RawJson(Cairo0Json),
     Rpc(DeprecatedContractClass),
 }
 
-impl Serialize for Cairo0ContractClass {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        match self {
-            Cairo0ContractClass::RawJson(contract_json) => contract_json.serialize(serializer),
-            Cairo0ContractClass::Rpc(contract) => contract.serialize(serializer),
-        }
-    }
-}
+// impl Serialize for Cairo0ContractClass {
+//     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+//     where
+//         S: Serializer,
+//     {
+//         match self {
+//             Cairo0ContractClass::RawJson(contract_json) => contract_json.serialize(serializer),
+//             Cairo0ContractClass::Rpc(contract) => contract.serialize(serializer),
+//         }
+//     }
+// }
 
-impl<'de> Deserialize<'de> for Cairo0ContractClass {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        Ok(Cairo0ContractClass::Rpc(DeprecatedContractClass::deserialize(deserializer)?))
-    }
-}
+// impl<'de> Deserialize<'de> for Cairo0ContractClass {
+//     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+//     where
+//         D: Deserializer<'de>,
+//     {
+//         Ok(Cairo0ContractClass::Rpc(DeprecatedContractClass::deserialize(deserializer)?))
+//     }
+// }
 
 impl From<Cairo0Json> for Cairo0ContractClass {
     fn from(value: Cairo0Json) -> Self {

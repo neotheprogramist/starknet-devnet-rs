@@ -5,7 +5,7 @@ use blockifier::execution::contract_class::ClassInfo;
 use cairo_lang_starknet_classes::casm_contract_class::CasmContractClass;
 use cairo_lang_starknet_classes::contract_class::ContractClass as SierraContractClass;
 use serde::de::IntoDeserializer;
-use serde::{Serialize, Serializer};
+use serde::{Deserialize, Serialize};
 use starknet_rs_core::types::contract::{SierraClass, SierraClassDebugInfo};
 use starknet_rs_core::types::{
     ContractClass as CodegenContractClass, FlattenedSierraClass as CodegenSierraContractClass,
@@ -22,23 +22,23 @@ pub use deprecated::json_contract_class::Cairo0Json;
 pub use deprecated::rpc_contract_class::DeprecatedContractClass;
 pub use deprecated::Cairo0ContractClass;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize)]
 pub enum ContractClass {
     Cairo0(Cairo0ContractClass),
     Cairo1(SierraContractClass),
 }
 
-impl Serialize for ContractClass {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        match self {
-            ContractClass::Cairo0(cairo0) => cairo0.serialize(serializer),
-            ContractClass::Cairo1(contract) => contract.serialize(serializer),
-        }
-    }
-}
+// impl Serialize for ContractClass {
+//     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+//     where
+//         S: Serializer,
+//     {
+//         match self {
+//             ContractClass::Cairo0(cairo0) => cairo0.serialize(serializer),
+//             ContractClass::Cairo1(contract) => contract.serialize(serializer),
+//         }
+//     }
+// }
 
 impl ContractClass {
     pub fn cairo_1_from_sierra_json_str(json_str: &str) -> DevnetResult<SierraContractClass> {
@@ -122,7 +122,6 @@ impl TryFrom<ContractClass> for blockifier::execution::contract_class::ContractC
 
                 let casm = serde_json::from_value::<CasmContractClass>(casm_json)
                     .map_err(|err| Error::JsonError(JsonError::Custom { msg: err.to_string() }))?;
-
                 let blockifier_contract_class: blockifier::execution::contract_class::ContractClassV1 =
                     casm.try_into().map_err(|_| Error::ProgramError)?;
 
@@ -365,8 +364,8 @@ mod tests {
     /// Then it takes the same artifact as a `DeprecatedContractClass` and generates its class hash.
     /// The test checks if both hashes are the same.
     #[test]
-    fn cairo_0_contract_class_hash_generated_successfully_and_its_the_same_as_raw_json_contract_class_hash()
-     {
+    fn cairo_0_contract_class_hash_generated_successfully_and_its_the_same_as_raw_json_contract_class_hash(
+    ) {
         let contract_class = Cairo0Json::raw_json_from_path(concat!(
             env!("CARGO_MANIFEST_DIR"),
             "/test_data/ERC20_starknet_js.casm"
